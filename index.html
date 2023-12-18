@@ -3,30 +3,30 @@
 
 <head>
     <title>Smart Coffee Advisor</title>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        #arjsScene {
-            width: 80vw;
-            /* 80% of the viewport width */
-            height: 80vh;
-            /* 80% of the viewport height */
-            margin: auto;
-            /* Center the scene */
-            /* Adjust the following to get the desired aspect ratio */
-            max-width: 100%;
-            max-height: 100%;
-        }
     </style>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-    <a-scene vr-mode-ui="enabled: false;" loading-screen="enabled: false;"
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" id="arjsScene" embedded
-        gesture-detector>
+    <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;">
+        <a-assets>
+            <a-asset-item id="coffeCup"
+                src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae"></a-asset-item>
+            <a-asset-item id="plasticCup"
+                src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/PlasticCoffeeCup.dae"></a-asset-item>
+            <a-asset-item id="teaCup"
+                src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/TeaGlass.dae"></a-asset-item>
+        </a-assets>
+
         <a-marker preset="hiro">
-            <a-text value="Your Coffee!" position="-0.5 0.5 0" scale="1 1 1"></a-text>
-            <a-entity id="coffeeModel" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
+            <a-text value="Your Coffee Text!" position="-0.7 1.2 0" scale="1 1 1"></a-text>
+            <!-- <a-entity
+                gltf-model="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+                scale="0.1 0.1 0.1" position="0 0 0"> -->
+            <a-entity id="coffeeModel" collada-model="#coffeCup" position="0 0 0" scale="0.1 0.1 0.1"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -38,17 +38,21 @@
         let coffeeType = "";
 
         const models = {
-            "Espresso": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Americano": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Latte": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Cappuccino": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Flat White": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Mocha": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
-            "Decaf": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/PlasticCoffeeCup.dae",
-            "Herbal Tea": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/TeaGlass.dae"
+            "Espresso": "coffeCup",
+            "Americano": "coffeCup",
+            "Latte": "coffeCup",
+            "Cappuccino": "coffeCup",
+            "Flat White": "coffeCup",
+            "Mocha": "coffeCup",
+            "Decaf": "coffeCup",
+            "Herbal Tea": "coffeCup"
         };
 
-        if (hours < 10) {
+        if (hours < 7)
+            coffeeType = "Herbal Tea";
+        else if (hours < 9) {
+            coffeeType = "Decaf";
+        } else if (hours < 10) {
             coffeeType = "Espresso";
         } else if (hours < 12) {
             coffeeType = "Americano";
@@ -66,8 +70,8 @@
             coffeeType = "Herbal Tea";
         }
 
-        let modelUrl = models[coffeeType];
-        return { coffeeType, modelUrl };
+        let modelAsset = models[coffeeType];
+        return { coffeeType, modelAsset };
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -76,9 +80,12 @@
         const coffeeModel = document.querySelector('#coffeeModel');
 
         marker.addEventListener('markerFound', () => {
-            const { coffeeType, modelUrl } = selectCoffeeType();
+            const { coffeeType, modelAsset } = selectCoffeeType();
             textElement.setAttribute('value', `Time for a ${coffeeType}!`);
-            coffeeModel.setAttribute('collada-model', "url(" + modelUrl + ")");
+            coffeeModel.setAttribute('collada-model', "#" + modelAsset);
+            console.log("Found a marker!");
+            console.log("Coffee type: " + coffeeType);
+            console.log("Model Asset: " + modelAsset);
         });
     });
 
