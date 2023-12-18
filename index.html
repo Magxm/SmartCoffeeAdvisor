@@ -19,14 +19,13 @@
                 src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/PlasticCoffeeCup.gltf"></a-asset-item>
             <a-asset-item id="teaCup"
                 src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/TeaGlass.gltf"></a-asset-item>
+            <a-asset-item id="trex"
+                src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker preset="hiro">
+            <a-entity id="coffeeModel" gltf-model="#coffeCup" position="0 0 0" scale="10 10 10"></a-entity>
             <a-text value="Your Coffee Text!" position="-0.7 1.2 0" scale="1 1 1"></a-text>
-            <!-- <a-entity
-                gltf-model="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
-                scale="0.1 0.1 0.1" position="0 0 0"> -->
-            <a-entity id="coffeeModel" collada-model="#coffeCup" position="0 0 0" scale="0.1 0.1 0.1"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -45,7 +44,7 @@
             "Flat White": "coffeCup",
             "Mocha": "coffeCup",
             "Decaf": "coffeCup",
-            "Herbal Tea": "coffeCup"
+            "Herbal Tea": "trex"
         };
 
         if (hours < 7)
@@ -82,7 +81,7 @@
         marker.addEventListener('markerFound', () => {
             const { coffeeType, modelAsset } = selectCoffeeType();
             textElement.setAttribute('value', `Time for a ${coffeeType}!`);
-            coffeeModel.setAttribute('collada-model', "#" + modelAsset);
+            coffeeModel.setAttribute('gltf-model', "#" + modelAsset);
             console.log("Found a marker!");
             console.log("Coffee type: " + coffeeType);
             console.log("Model Asset: " + modelAsset);
