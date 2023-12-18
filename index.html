@@ -13,19 +13,16 @@
     <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true;" embedded
         arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;">
         <a-assets>
-            <a-asset-item id="coffeCup"
+            <a-asset-item id="coffeeCup"
                 src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.gltf"></a-asset-item>
             <a-asset-item id="plasticCup"
                 src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/PlasticCoffeeCup.gltf"></a-asset-item>
             <a-asset-item id="teaCup"
                 src="https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/TeaGlass.gltf"></a-asset-item>
-            <a-asset-item id="trex"
-                src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker preset="hiro">
-            <a-entity id="coffeeModel" gltf-model="#coffeCup" position="0 0 0" scale="10 10 10"></a-entity>
-            <a-text value="Your Coffee Text!" position="-0.7 1.2 0" scale="1 1 1"></a-text>
+            <a-text value="Your Coffee Text!" position="-1.0 1.2 0" scale="1 1 1"></a-text>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -37,15 +34,33 @@
         let coffeeType = "";
 
         const models = {
-            "Espresso": "coffeCup",
-            "Americano": "coffeCup",
-            "Latte": "coffeCup",
-            "Cappuccino": "coffeCup",
-            "Flat White": "coffeCup",
-            "Mocha": "coffeCup",
-            "Decaf": "coffeCup",
-            "Herbal Tea": "trex"
+            "Espresso": "coffeeCup",
+            "Americano": "coffeeCup",
+            "Latte": "coffeeCup",
+            "Cappuccino": "coffeeCup",
+            "Flat White": "coffeeCup",
+            "Mocha": "plasticCup",
+            "Decaf": "plasticCup",
+            "Herbal Tea": "coffeeCup"
         };
+
+        const scales = {
+            "coffeeCup": '0.4 0.4 0.4',
+            "plasticCup": '3 3 3',
+            "teaCup": '3 3 3'
+        }
+
+        const rotations = {
+            "coffeeCup": '260 45 0',
+            "plasticCup": '0 0 0',
+            "teaCup": '0 0 0'
+        }
+
+        const positions = {
+            "coffeeCup": '0 0 0',
+            "plasticCup": '0.3 0 0',
+            "teaCup": '-4.5 0 0'
+        }
 
         if (hours < 7)
             coffeeType = "Herbal Tea";
@@ -70,7 +85,10 @@
         }
 
         let modelAsset = models[coffeeType];
-        return { coffeeType, modelAsset };
+        let scale = scales[modelAsset];
+        let rotation = rotations[modelAsset];
+        let position = positions[modelAsset];
+        return { coffeeType, modelAsset, scale, rotation, position };
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -79,14 +97,45 @@
         const coffeeModel = document.querySelector('#coffeeModel');
 
         marker.addEventListener('markerFound', () => {
-            const { coffeeType, modelAsset } = selectCoffeeType();
-            textElement.setAttribute('value', `Time for a ${coffeeType}!`);
-            coffeeModel.setAttribute('gltf-model', "#" + modelAsset);
+            const { coffeeType, modelAsset, scale, rotation, position } = selectCoffeeType();
             console.log("Found a marker!");
             console.log("Coffee type: " + coffeeType);
             console.log("Model Asset: " + modelAsset);
+            console.log("Scale: " + scale);
+            console.log("Rotation: " + rotation);
+
+            textElement.setAttribute('value', `Time for a ${coffeeType}!`);
+            // We delete the old model and add the new one
+            if (coffeeModel) {
+                coffeeModel.parentNode.removeChild(coffeeModel);
+            }
+
+            const newModel = document.createElement('a-entity');
+            newModel.setAttribute('id', 'coffeeModel');
+            newModel.setAttribute('gltf-model', "#" + modelAsset);
+            newModel.setAttribute('position', position);
+            newModel.setAttribute('scale', scale);
+            newModel.setAttribute('rotation', rotation);
+            marker.appendChild(newModel);
         });
     });
+
+    // AFRAME.registerComponent('markerhandler', {
+    //     init: function () {
+    //         const marker = document.querySelector('a-marker');
+    //         const textElement = document.querySelector('a-text');
+    //         const coffeeModel = document.querySelector('#coffeeModel');
+
+    //         marker.addEventListener('markerFound', () => {
+    //             const { coffeeType, modelAsset } = selectCoffeeType();
+    //             textElement.setAttribute('value', `Time for a ${coffeeType}!`);
+    //             coffeeModel.setAttribute('gltf-model', "#" + modelAsset);
+    //             console.log("Found a marker!");
+    //             console.log("Coffee type: " + coffeeType);
+    //             console.log("Model Asset: " + modelAsset);
+    //         });
+    //     }
+    // });
 
 </script>
 
