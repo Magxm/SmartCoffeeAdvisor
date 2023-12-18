@@ -25,7 +25,8 @@
         arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;" id="arjsScene" embedded
         gesture-detector>
         <a-marker preset="hiro">
-            <a-text value="Your Coffee!" position="-0.5 1.1 0" scale="1 1 1"></a-text>
+            <a-text value="Your Coffee!" position="-0.5 0.5 0" scale="1 1 1"></a-text>
+            <a-entity id="coffeeModel" position="0 0 0" scale="0.5 0.5 0.5"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -37,14 +38,14 @@
         let coffeeType = "";
 
         const models = {
-            "Espresso": "url/to/espresso-model.glb",
-            "Americano": "url/to/americano-model.glb",
-            "Latte": "url/to/latte-model.glb",
-            "Cappuccino": "url/to/cappuccino-model.glb",
-            "Flat White": "url/to/flat-white-model.glb",
-            "Mocha": "url/to/mocha-model.glb",
-            "Decaf": "url/to/decaf-model.glb",
-            "Herbal Tea": "url/to/herbal-tea-model.glb"
+            "Espresso": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Americano": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Latte": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Cappuccino": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Flat White": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Mocha": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/CoffeeCup.dae",
+            "Decaf": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/PlasticCoffeeCup.dae",
+            "Herbal Tea": "https://raw.githack.com/Magxm/SmartCoffeeAdvisor/main/resources/TeaGlass.dae"
         };
 
         if (hours < 10) {
@@ -72,10 +73,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         const marker = document.querySelector('a-marker');
         const textElement = document.querySelector('a-text');
+        const coffeeModel = document.querySelector('#coffeeModel');
 
         marker.addEventListener('markerFound', () => {
-            const coffeeRecommendation = selectCoffeeType();
-            textElement.setAttribute('value', `Time for a ${coffeeRecommendation}!`);
+            const { coffeeType, modelUrl } = selectCoffeeType();
+            textElement.setAttribute('value', `Time for a ${coffeeType}!`);
+            coffeeModel.setAttribute('collada-model', "url(" + modelUrl + ")");
         });
     });
 
